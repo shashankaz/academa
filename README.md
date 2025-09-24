@@ -52,7 +52,7 @@ Before setting up the project, ensure you have:
 
 ### 1. Clone the Repository
 ```bash
-git clone <repository-url>
+git clone https://github.com/shashankaz/academa.git
 cd academa
 ```
 
@@ -203,7 +203,6 @@ academa/
     │   ├── middlewares/    # Authentication and authorization middleware
     │   ├── routes/         # API route definitions
     │   ├── config/         # Configuration files (database, AWS)
-    │   └── utils/          # Utility functions
     └── prisma/             # Database schema and migrations
 ```
 
