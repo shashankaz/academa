@@ -18,6 +18,7 @@ import {
 
 import { cn } from "@/lib/utils";
 import { api } from "@/lib/api";
+import { useAuth } from "@/hooks/useAuth";
 
 const RegisterForm = ({ className, ...props }: React.ComponentProps<"div">) => {
   const [form, setForm] = useState({
@@ -30,6 +31,7 @@ const RegisterForm = ({ className, ...props }: React.ComponentProps<"div">) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -46,7 +48,7 @@ const RegisterForm = ({ className, ...props }: React.ComponentProps<"div">) => {
     try {
       const response = await api.post("/auth/register", payload);
       if (response.status === 201) {
-        localStorage.setItem("user", JSON.stringify(response.data.newUser));
+        login(response.data.newUser);
         setForm({
           firstName: "",
           lastName: "",

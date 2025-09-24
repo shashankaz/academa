@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import Loading from "@/components/loading";
 
 import { api } from "@/lib/api";
+import { useAuth } from "@/hooks/useAuth";
 
 const Profile = () => {
   const [profile, setProfile] = useState<{ name: string; role: string } | null>(
@@ -13,6 +14,7 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
 
   const navigate = useNavigate();
+  const { logout } = useAuth();
 
   const fetchProfile = async () => {
     setLoading(true);
@@ -35,12 +37,9 @@ const Profile = () => {
 
   const handleLogOut = async () => {
     try {
-      const response = await api.post("/auth/logout");
-      if (response.status === 200) {
-        localStorage.removeItem("user");
-        setProfile(null);
-        navigate("/login");
-      }
+      await logout();
+      setProfile(null);
+      navigate("/login");
     } catch (error) {
       console.error(error);
     }

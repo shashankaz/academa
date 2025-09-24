@@ -3,11 +3,11 @@ import { Link } from "react-router";
 import { Menu } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
 
 const MenuBar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const userData = localStorage.getItem("user");
-  const user = userData ? JSON.parse(userData) : null;
+  const { user } = useAuth();
 
   const role = user?.role || "student";
 

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
-import { Link, useNavigate } from "react-router";
+import { Link, useNavigate, useLocation } from "react-router";
 import toast from "react-hot-toast";
 import { LoaderCircle } from "lucide-react";
 
@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 
 import { cn } from "@/lib/utils";
 import { api } from "@/lib/api";
+import { useAuth } from "@/hooks/useAuth";
 
 const LoginForm = ({ className, ...props }: React.ComponentProps<"div">) => {
   const [form, setForm] = useState({
@@ -20,6 +21,8 @@ const LoginForm = ({ className, ...props }: React.ComponentProps<"div">) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const navigate = useNavigate();
+  const location = useLocation();
+  const { login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -34,10 +37,12 @@ const LoginForm = ({ className, ...props }: React.ComponentProps<"div">) => {
     try {
       const response = await api.post("/auth/login", payload);
       if (response.status === 200) {
-        localStorage.setItem("user", JSON.stringify(response.data.user));
+        login(response.data.user);
         setForm({ email: "", password: "" });
         toast.success("Login successful!");
-        navigate("/dashboard");
+
+        const from = location.state?.from?.pathname || "/dashboard";
+        navigate(from, { replace: true });
       }
     } catch (error) {
       console.error(error);

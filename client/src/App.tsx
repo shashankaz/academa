@@ -4,6 +4,8 @@ import { BrowserRouter as Router, Routes, Route } from "react-router";
 
 import RootLayout from "./Layout/RootLayout";
 import DashboardLayout from "./Layout/DashboardLayout";
+import { AuthProvider } from "./contexts/AuthContext";
+import { ProtectedRoute, PublicRoute } from "./components/RouteGuards";
 
 import Loading from "./pages/Loading";
 import NotFound from "./pages/NotFound";
@@ -23,33 +25,59 @@ const Profile = lazy(() => import("./pages/Profile"));
 
 const Home = () => {
   return (
-    <Suspense fallback={<Loading />}>
-      <Router>
-        <Routes>
-          <Route path="/" element={<RootLayout />}>
-            <Route index element={<LandingPage />} />
-            <Route path="login" element={<Login />} />
-            <Route path="register" element={<Register />} />
-            <Route path="demo" element={<Demo />} />
-            <Route path="dashboard" element={<DashboardLayout />}>
-              <Route index element={<Dashboard />} />
-              <Route path="new" element={<NewCourse />} />
-              <Route path="course" element={<Courses />} />
-              <Route path="course/:id" element={<CourseDetails />} />
+    <AuthProvider>
+      <Suspense fallback={<Loading />}>
+        <Router>
+          <Routes>
+            <Route path="/" element={<RootLayout />}>
+              <Route index element={<LandingPage />} />
               <Route
-                path="course/:id/reading/:docId"
-                element={<CourseDocs />}
+                path="login"
+                element={
+                  <PublicRoute>
+                    <Login />
+                  </PublicRoute>
+                }
               />
-              <Route path="course/:id/quiz/:quizId" element={<CourseQuiz />} />
-              <Route path="course/:id/edit" element={<CourseEdit />} />
-              <Route path="profile" element={<Profile />} />
+              <Route
+                path="register"
+                element={
+                  <PublicRoute>
+                    <Register />
+                  </PublicRoute>
+                }
+              />
+              <Route path="demo" element={<Demo />} />
+              <Route
+                path="dashboard"
+                element={
+                  <ProtectedRoute>
+                    <DashboardLayout />
+                  </ProtectedRoute>
+                }
+              >
+                <Route index element={<Dashboard />} />
+                <Route path="new" element={<NewCourse />} />
+                <Route path="course" element={<Courses />} />
+                <Route path="course/:id" element={<CourseDetails />} />
+                <Route
+                  path="course/:id/reading/:docId"
+                  element={<CourseDocs />}
+                />
+                <Route
+                  path="course/:id/quiz/:quizId"
+                  element={<CourseQuiz />}
+                />
+                <Route path="course/:id/edit" element={<CourseEdit />} />
+                <Route path="profile" element={<Profile />} />
+              </Route>
+              <Route path="/*" element={<NotFound />} />
             </Route>
-            <Route path="/*" element={<NotFound />} />
-          </Route>
-        </Routes>
-      </Router>
-      <Toaster position="top-center" reverseOrder={false} />
-    </Suspense>
+          </Routes>
+        </Router>
+        <Toaster position="top-center" reverseOrder={false} />
+      </Suspense>
+    </AuthProvider>
   );
 };
 

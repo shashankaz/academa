@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router";
 import { LoaderCircle } from "lucide-react";
@@ -8,7 +8,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
+import Loading from "@/components/loading";
 import { api } from "@/lib/api";
+import { useAuth } from "@/hooks/useAuth";
 
 const NewCourse = () => {
   const [formData, setFormData] = useState({
@@ -17,8 +19,15 @@ const NewCourse = () => {
     coverImage: null as File | null,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { user, isLoading } = useAuth();
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isLoading && user && user.role !== "instructor") {
+      navigate("/dashboard");
+    }
+  }, [user, isLoading, navigate]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
@@ -74,6 +83,10 @@ const NewCourse = () => {
       setIsSubmitting(false);
     }
   };
+
+  if (isLoading) {
+    return <Loading />;
+  }
 
   return (
     <div className="h-[calc(100vh-5rem)] max-w-7xl mx-auto px-4 py-10 space-y-6">

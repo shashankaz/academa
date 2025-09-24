@@ -8,6 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 import { api } from "@/lib/api";
 import type { CourseDetails } from "@/types";
+import { useAuth } from "@/hooks/useAuth";
 
 const CourseDetails = () => {
   const [courseDetails, setCourseDetails] = useState<CourseDetails | null>(
@@ -16,6 +17,7 @@ const CourseDetails = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   const id = useParams().id;
+  const { user } = useAuth();
 
   const fetchCourseDetails = async () => {
     setIsLoading(true);
@@ -52,8 +54,6 @@ const CourseDetails = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const userData = localStorage.getItem("user");
-  const user = userData ? JSON.parse(userData) : null;
   const userId = user?.id;
   const userType = user?.role;
 
