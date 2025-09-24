@@ -1,0 +1,68 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String            @id @default(cuid())
+  name            String
+  email           String            @unique
+  password        String
+  role            Role
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  courses         Course[]          @relation("InstructorCourses")
+  CoursesEnrolled CoursesEnrolled[]
+}
+
+model Course {
+  id              String            @id @default(cuid())
+  title           String
+  description     String
+  coverImage      String
+  instructorId    String
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  instructor      User              @relation("InstructorCourses", fields: [instructorId], references: [id], onDelete: Cascade)
+  lectures        Lecture[]
+  CoursesEnrolled CoursesEnrolled[]
+}
+
+model Lecture {
+  id          String      @id @default(cuid())
+  title       String
+  type        LectureType
+  content     String?
+  quizContent Json?
+  courseId    String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  Course      Course?     @relation(fields: [courseId], references: [id], onDelete: Cascade)
+}
+
+enum Role {
+  student
+  instructor
+}
+
+enum LectureType {
+  reading
+  quiz
+}
+
+model CoursesEnrolled {
+  id                   String   @id @default(cuid())
+  userId               String
+  courseId             String
+  enrolledAt           DateTime @default(now())
+  lastLectureCompleted Int      @default(0)
+  quizScores           Json?
+  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course               Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId])
+}
